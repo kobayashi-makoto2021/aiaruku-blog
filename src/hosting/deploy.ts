@@ -24,6 +24,31 @@ async function sha256hex(data: Uint8Array): Promise<string> {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
+async function fetchCurrentAdminFileHashes(siteId: string, accessToken: string): Promise<Record<string, string>> {
+  const releasesRes = await fetch(`${API}/sites/${siteId}/releases?pageSize=1`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!releasesRes.ok) return {}
+  const { releases } = await releasesRes.json() as { releases?: { version: { name: string } }[] }
+  if (!releases?.length) return {}
+
+  const versionName = releases[0].version.name
+  const filesRes = await fetch(`${API}/${versionName}/files?pageSize=1000`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!filesRes.ok) return {}
+  const { files } = await filesRes.json() as { files?: { path: string; hash: string }[] }
+  if (!files) return {}
+
+  const adminHashes: Record<string, string> = {}
+  for (const file of files) {
+    if (file.path.startsWith('/admin/')) {
+      adminHashes[file.path] = file.hash
+    }
+  }
+  return adminHashes
+}
+
 export type DeployFiles = Record<string, string> // URLパス -> HTML文字列
 
 export async function deployToHosting(
@@ -32,6 +57,9 @@ export async function deployToHosting(
   onProgress?: (msg: string) => void,
 ): Promise<void> {
   const siteId = BLOG_CONFIG.hostingSiteId
+  onProgress?.('既存のadminファイルを取得中...')
+  const adminFileHashes = await fetchCurrentAdminFileHashes(siteId, accessToken)
+
   onProgress?.('バージョンを作成中...')
 
   // 1. バージョン作成
@@ -64,12 +92,15 @@ export async function deployToHosting(
     fileHashes[path] = hash
   }
 
+  // adminファイルのハッシュを合わせて登録（既存ファイルは再アップロード不要）
+  const allFileHashes = { ...adminFileHashes, ...fileHashes }
+
   // 3. アップロード対象を取得
   onProgress?.('アップロード準備中...')
   const populateRes = await fetch(`${API}/sites/${siteId}/versions/${versionId}:populateFiles`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ files: fileHashes }),
+    body: JSON.stringify({ files: allFileHashes }),
   })
   if (!populateRes.ok) throw new Error(`ファイル登録失敗: ${await populateRes.text()}`)
   const { uploadRequiredHashes = [], uploadUrl } = await populateRes.json() as {
@@ -77,7 +108,7 @@ export async function deployToHosting(
     uploadUrl: string
   }
 
-  // 4. ファイルアップロード
+  // 4. ファイルアップロード（新規/変更ファイルのみ）
   const total = uploadRequiredHashes.length
   for (let i = 0; i < total; i++) {
     const hash = uploadRequiredHashes[i]
