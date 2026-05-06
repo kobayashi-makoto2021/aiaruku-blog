@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ユーザーのロールを取得するヘルパー
+    function getRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return request.auth != null && getRole() == 'admin';
+    }
+
+    function isAuthorOrAdmin() {
+      return request.auth != null && getRole() in ['author', 'admin'];
+    }
+
+    // 記事
+    match /posts/{postId} {
+      // 公開記事は誰でも読める（静的HTML生成時のFirestore読み取り）
+      allow read: if resource.data.status == 'published'
+                  || (request.auth != null && isAuthorOrAdmin());
+
+      // 新規作成: author/admin のみ
+      allow create: if isAuthorOrAdmin()
+                    && request.resource.data.authorId == request.auth.uid;
+
+      // 更新: 自分の記事はauthorも可、他人の記事はadminのみ
+      allow update: if isAdmin()
+                    || (isAuthorOrAdmin() && resource.data.authorId == request.auth.uid);
+
+      // 削除: 自分の記事はauthorも可、他人の記事はadminのみ
+      allow delete: if isAdmin()
+                    || (isAuthorOrAdmin() && resource.data.authorId == request.auth.uid);
+    }
+
+    // コメント
+    match /comments/{commentId} {
+      // 承認済みコメントは誰でも読める
+      allow read: if resource.data.status == 'approved' || isAuthorOrAdmin();
+
+      // 投稿は誰でも可（未認証含む）
+      allow create: if request.resource.data.status == 'pending'
+                    && request.resource.data.content.size() > 0
+                    && request.resource.data.content.size() <= 1000;
+
+      // ステータス変更はadminのみ
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ユーザー
+    match /users/{uid} {
+      // 自分のドキュメントは読める、adminは全員読める
+      allow read: if request.auth != null
+                  && (request.auth.uid == uid || isAdmin());
+
+      // 初回ログイン時に自分のドキュメントを作成（roleはpendingのみ許可）
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && request.resource.data.role == 'pending';
+
+      // lastLoginAtの更新は本人可、role変更はadminのみ
+      allow update: if isAdmin()
+                    || (request.auth.uid == uid
+                        && request.resource.data.role == resource.data.role);
+
+      allow delete: if isAdmin();
+    }
+  }
+}
