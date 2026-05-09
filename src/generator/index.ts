@@ -23,6 +23,19 @@ function formatDateJa(post: Post): string {
   })
 }
 
+function gtagSnippet(): string {
+  const id = BLOG_CONFIG.gaId
+  if (!id) return ''
+  return `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '${id}');
+</script>`
+}
+
 const BASE_CSS = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif; color: #1a1a1a; line-height: 1.8; background: #fff; }
@@ -108,6 +121,7 @@ export function generatePostHtml(post: Post): string {
   <link rel="canonical" href="${url}">
   <script type="application/ld+json">${jsonLd}</script>
   <style>${BASE_CSS}${post.commentsEnabled ? COMMENT_CSS : ''}</style>
+  ${gtagSnippet()}
 </head>
 <body>
   <header class="site-header">
@@ -244,6 +258,7 @@ export function generateIndexHtml(posts: Post[]): string {
   <meta property="og:url" content="${url}">
   <link rel="canonical" href="${url}">
   <style>${BASE_CSS}</style>
+  ${gtagSnippet()}
 </head>
 <body>
   <header class="site-header">

@@ -1,6 +1,7 @@
 export const BLOG_CONFIG = {
   siteName: 'アイアルク ブログ',
   siteUrl: 'https://blog.aiaruku.com',
+  gaId: 'G-M1WN0Z0R6W',
 
   allowedDomains: ['aiaruku.com'] as string[],
 
