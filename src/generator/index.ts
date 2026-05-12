@@ -44,8 +44,8 @@ const BASE_CSS = `
   img { max-width: 100%; height: auto; }
   .site-header { border-bottom: 1px solid #e5e7eb; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
   .site-header a { font-weight: 700; font-size: 1.1rem; color: #1a1a1a; }
-  .admin-link { font-size: 0.7rem !important; font-weight: 400 !important; color: #9ca3af !important; }
-  .admin-link:hover { color: #6b7280 !important; }
+  .admin-link { font-size: 0.8rem !important; font-weight: 400 !important; color: #6b7280 !important; }
+  .admin-link:hover { color: #374151 !important; }
   .container { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem; }
   .post-header { margin-bottom: 2rem; }
   .post-title { font-size: 1.75rem; font-weight: 800; line-height: 1.4; margin-bottom: 0.75rem; }
