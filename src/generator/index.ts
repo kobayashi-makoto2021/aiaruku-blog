@@ -71,8 +71,8 @@ const BASE_CSS = `
   .post-card-meta { font-size: 0.8rem; color: #9ca3af; }
   .page-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; }
   .site-footer { margin-top: 4rem; padding: 1rem 1.5rem; text-align: right; }
-  .site-footer a { font-size: 0.7rem; color: #d1d5db; text-decoration: none; }
-  .site-footer a:hover { color: #9ca3af; }
+  .site-footer a { font-size: 0.75rem; color: #9ca3af; text-decoration: none; }
+  .site-footer a:hover { color: #6b7280; }
 `
 
 export function extractFirstImage(html: string): string {
