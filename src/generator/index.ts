@@ -42,8 +42,10 @@ const BASE_CSS = `
   a { color: #2563eb; text-decoration: none; }
   a:hover { text-decoration: underline; }
   img { max-width: 100%; height: auto; }
-  .site-header { border-bottom: 1px solid #e5e7eb; padding: 1rem 1.5rem; }
+  .site-header { border-bottom: 1px solid #e5e7eb; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
   .site-header a { font-weight: 700; font-size: 1.1rem; color: #1a1a1a; }
+  .admin-link { font-size: 0.7rem !important; font-weight: 400 !important; color: #9ca3af !important; }
+  .admin-link:hover { color: #6b7280 !important; }
   .container { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem; }
   .post-header { margin-bottom: 2rem; }
   .post-title { font-size: 1.75rem; font-weight: 800; line-height: 1.4; margin-bottom: 0.75rem; }
@@ -70,9 +72,6 @@ const BASE_CSS = `
   .post-card-excerpt { font-size: 0.9rem; color: #6b7280; margin-bottom: 0.75rem; }
   .post-card-meta { font-size: 0.8rem; color: #9ca3af; }
   .page-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; }
-  .site-footer { margin-top: 4rem; padding: 1rem 1.5rem; text-align: right; }
-  .site-footer a { font-size: 0.75rem; color: #9ca3af; text-decoration: none; }
-  .site-footer a:hover { color: #6b7280; }
 `
 
 export function extractFirstImage(html: string): string {
@@ -129,6 +128,7 @@ export function generatePostHtml(post: Post): string {
 <body>
   <header class="site-header">
     <a href="${BLOG_CONFIG.siteUrl}/">${escapeHtml(BLOG_CONFIG.siteName)}</a>
+    <a href="/admin/" class="admin-link">管理者ログイン</a>
   </header>
   <div class="container">
     <article>
@@ -148,7 +148,6 @@ export function generatePostHtml(post: Post): string {
     </div>
     ${post.commentsEnabled ? generateCommentSection(post.id) : ''}
   </div>
-  <footer class="site-footer"><a href="/admin/">管理者ログイン</a></footer>
 </body>
 </html>`
 }
@@ -267,6 +266,7 @@ export function generateIndexHtml(posts: Post[]): string {
 <body>
   <header class="site-header">
     <a href="${url}">${escapeHtml(BLOG_CONFIG.siteName)}</a>
+    <a href="/admin/" class="admin-link">管理者ログイン</a>
   </header>
   <div class="container">
     <h1 class="page-title">ブログ</h1>
@@ -274,7 +274,6 @@ export function generateIndexHtml(posts: Post[]): string {
       ${postCards}
     </div>
   </div>
-  <footer class="site-footer"><a href="/admin/">管理者ログイン</a></footer>
 </body>
 </html>`
 }
