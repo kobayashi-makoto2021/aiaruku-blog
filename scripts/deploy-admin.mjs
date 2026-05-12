@@ -115,7 +115,10 @@ async function main() {
           { glob: '**/*.html', headers: { 'Cache-Control': 'public, max-age=3600' } },
           { glob: '**/*.@(js|css)', headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
         ],
-        rewrites: [{ glob: '/admin/**', path: '/admin/index.html' }],
+        rewrites: [
+          { glob: '/admin', path: '/admin/index.html' },
+          { glob: '/admin/**', path: '/admin/index.html' },
+        ],
       },
     }),
   })

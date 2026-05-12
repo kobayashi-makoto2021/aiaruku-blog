@@ -72,7 +72,10 @@ export async function deployToHosting(
           { glob: '/admin/**', headers: { 'Cache-Control': 'no-store' } },
           { glob: '**/*.html', headers: { 'Cache-Control': 'public, max-age=3600' } },
         ],
-        rewrites: [{ glob: '/admin/**', path: '/admin/index.html' }],
+        rewrites: [
+          { glob: '/admin', path: '/admin/index.html' },
+          { glob: '/admin/**', path: '/admin/index.html' },
+        ],
       },
     }),
   })
