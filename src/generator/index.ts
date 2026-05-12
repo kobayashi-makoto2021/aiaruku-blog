@@ -70,6 +70,9 @@ const BASE_CSS = `
   .post-card-excerpt { font-size: 0.9rem; color: #6b7280; margin-bottom: 0.75rem; }
   .post-card-meta { font-size: 0.8rem; color: #9ca3af; }
   .page-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; }
+  .site-footer { margin-top: 4rem; padding: 1rem 1.5rem; text-align: right; }
+  .site-footer a { font-size: 0.7rem; color: #d1d5db; text-decoration: none; }
+  .site-footer a:hover { color: #9ca3af; }
 `
 
 export function extractFirstImage(html: string): string {
@@ -145,6 +148,7 @@ export function generatePostHtml(post: Post): string {
     </div>
     ${post.commentsEnabled ? generateCommentSection(post.id) : ''}
   </div>
+  <footer class="site-footer"><a href="/admin/">管理者ログイン</a></footer>
 </body>
 </html>`
 }
@@ -270,6 +274,7 @@ export function generateIndexHtml(posts: Post[]): string {
       ${postCards}
     </div>
   </div>
+  <footer class="site-footer"><a href="/admin/">管理者ログイン</a></footer>
 </body>
 </html>`
 }
