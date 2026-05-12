@@ -49,16 +49,25 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // 招待
+    match /invitations/{email} {
+      allow read, create, delete: if isAdmin();
+      // 招待されたユーザー本人が使用後に削除できる
+      allow delete: if request.auth != null && request.auth.token.email == email;
+    }
+
     // ユーザー
     match /users/{uid} {
       // 自分のドキュメントは読める、adminは全員読める
       allow read: if request.auth != null
                   && (request.auth.uid == uid || isAdmin());
 
-      // 初回ログイン時に自分のドキュメントを作成（roleはpendingのみ許可）
+      // 初回ログイン時に自分のドキュメントを作成
+      // 招待がある場合はそのroleで、ない場合はpendingのみ許可
       allow create: if request.auth != null
                     && request.auth.uid == uid
-                    && request.resource.data.role == 'pending';
+                    && (request.resource.data.role == 'pending'
+                        || exists(/databases/$(database)/documents/invitations/$(request.auth.token.email)));
 
       // lastLoginAtの更新は本人可、role変更はadminのみ
       allow update: if isAdmin()

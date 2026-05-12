@@ -32,6 +32,13 @@ export interface Post {
   commentsEnabled: boolean
 }
 
+export interface Invitation {
+  email: string
+  role: Exclude<UserRole, 'pending'>
+  createdBy: string
+  createdAt: Timestamp
+}
+
 export type CommentStatus = 'pending' | 'approved' | 'rejected'
 
 export interface Comment {

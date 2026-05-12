@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   type User,
 } from 'firebase/auth'
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db, googleProvider } from '@/firebase'
 import { BLOG_CONFIG } from '@/config'
 import type { BlogUser, UserRole } from '@/types'
@@ -56,14 +56,22 @@ async function ensureUserDoc(user: User): Promise<void> {
   const snap = await getDoc(ref)
 
   if (!snap.exists()) {
+    const inviteRef = doc(db, 'invitations', user.email!)
+    const inviteSnap = await getDoc(inviteRef)
+    const role = inviteSnap.exists() ? (inviteSnap.data().role as string) : 'pending'
+
     await setDoc(ref, {
       uid: user.uid,
       email: user.email,
       displayName: user.displayName,
-      role: 'pending',
+      role,
       createdAt: serverTimestamp(),
       lastLoginAt: serverTimestamp(),
     })
+
+    if (inviteSnap.exists()) {
+      await deleteDoc(inviteRef)
+    }
   } else {
     await updateDoc(ref, { lastLoginAt: serverTimestamp() })
   }
