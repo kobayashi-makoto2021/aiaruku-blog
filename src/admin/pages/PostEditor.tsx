@@ -5,6 +5,7 @@ import type { UserRole } from '@/types'
 import { createPost, updatePost, getPost, generateSlug, type PostInput } from '@/posts'
 import { uploadImage } from '@/storage'
 import { runDeploy } from '@/hosting'
+import { BLOG_CONFIG } from '@/config'
 import type { PostStatus } from '@/types'
 import Editor from '@/admin/components/Editor'
 import SeoPanel from '@/admin/components/SeoPanel'
@@ -208,6 +209,17 @@ export default function PostEditor({ user }: Props) {
                 下書き保存
               </button>
             </>
+          )}
+          {form.slug && (
+            <a
+              href={`${BLOG_CONFIG.siteUrl}/${form.slug}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 hover:bg-gray-50 truncate"
+            >
+              <span className="flex-shrink-0">🔗</span>
+              <span className="truncate">{BLOG_CONFIG.siteUrl}/{form.slug}/</span>
+            </a>
           )}
           <button
             onClick={() => navigate('/')}
