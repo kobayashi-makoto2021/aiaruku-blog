@@ -13,9 +13,9 @@ jobs:
           node-version: '20'
       - name: Build
         run: npm ci && npm run build
-      - name: Deploy to Firebase Hosting
+      - name: Deploy admin to Firebase Hosting
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_AIARUKU_BLOG }}
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
-          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" npx firebase-tools deploy --only hosting --project aiaruku-blog
+          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" node scripts/deploy-admin.mjs
