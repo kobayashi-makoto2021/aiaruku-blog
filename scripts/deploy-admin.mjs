@@ -6,7 +6,6 @@ import { gzipSync } from 'node:zlib'
 const API = 'https://firebasehosting.googleapis.com/v1beta1'
 const firebaseJson = JSON.parse(readFileSync('firebase.json', 'utf8'))
 const SITE_ID = firebaseJson.hosting.site
-const SITE_URL = 'https://blog.aiaruku.com'
 
 async function getAccessToken() {
   const key = JSON.parse(readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8'))
@@ -46,36 +45,30 @@ function collectFiles(dir, base = dir) {
   return result
 }
 
-// ライブサイトから現在のブログHTMLを取得して保持する
-async function fetchCurrentBlogFiles() {
-  const files = {}
+// Firebase Hosting APIから現在のバージョンのブログファイルハッシュを取得
+async function fetchCurrentBlogFileHashes(token) {
+  const releasesRes = await fetch(`${API}/sites/${SITE_ID}/releases?pageSize=1`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!releasesRes.ok) return {}
+  const { releases } = await releasesRes.json()
+  if (!releases?.length) return {}
 
-  const indexRes = await fetch(`${SITE_URL}/`)
-  if (!indexRes.ok) {
-    console.log('ブログindex.htmlなし（初回デプロイ or 未配置）。スキップします。')
-    return files
-  }
-  files['/index.html'] = Buffer.from(await indexRes.arrayBuffer())
-  console.log('index.html 取得済み')
+  const versionName = releases[0].version.name
+  const filesRes = await fetch(`${API}/${versionName}/files?pageSize=1000`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!filesRes.ok) return {}
+  const { files } = await filesRes.json()
+  if (!files) return {}
 
-  const sitemapRes = await fetch(`${SITE_URL}/sitemap.xml`)
-  if (!sitemapRes.ok) return files
-  const sitemap = await sitemapRes.text()
-  files['/sitemap.xml'] = Buffer.from(new TextEncoder().encode(sitemap))
-
-  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1])
-  for (const url of urls) {
-    const pathname = new URL(url).pathname
-    if (pathname === '/') continue
-    const hostingPath = pathname.endsWith('/') ? `${pathname}index.html` : `${pathname}/index.html`
-    const res = await fetch(url)
-    if (res.ok) {
-      files[hostingPath] = Buffer.from(await res.arrayBuffer())
-      console.log(`${hostingPath} 取得済み`)
+  const blogHashes = {}
+  for (const file of files) {
+    if (!file.path.startsWith('/admin/')) {
+      blogHashes[file.path] = file.hash
     }
   }
-
-  return files
+  return blogHashes
 }
 
 async function main() {
@@ -93,15 +86,8 @@ async function main() {
     adminHashes[`/admin${rel}`] = hash
   }
 
-  console.log('既存のブログページをライブサイトから取得中...')
-  const blogRawFiles = await fetchCurrentBlogFiles()
-  const blogHashes = {}
-  for (const [path, content] of Object.entries(blogRawFiles)) {
-    const gz = gzipSync(content)
-    const hash = sha256hex(gz)
-    gzipped[hash] = gz
-    blogHashes[path] = hash
-  }
+  console.log('既存のブログファイルハッシュをAPIから取得中...')
+  const blogHashes = await fetchCurrentBlogFileHashes(token)
   console.log(`保持するブログファイル数: ${Object.keys(blogHashes).length}`)
 
   console.log('バージョン作成中...')
