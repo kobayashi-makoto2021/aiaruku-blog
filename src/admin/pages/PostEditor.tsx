@@ -42,6 +42,7 @@ export default function PostEditor({ user }: Props) {
   const [deploying, setDeploying] = useState(false)
   const [showSeo, setShowSeo] = useState(false)
   const [savedPostId, setSavedPostId] = useState<string | null>(postId ?? null)
+  const [copied, setCopied] = useState(false)
 
   // 新規記事でも画像をアップロードできるよう一時IDを持つ
   const tempId = useRef(postId ?? `tmp-${Date.now()}`)
@@ -211,15 +212,29 @@ export default function PostEditor({ user }: Props) {
             </>
           )}
           {form.slug && (
-            <a
-              href={`${BLOG_CONFIG.siteUrl}/${form.slug}/`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 hover:bg-gray-50 truncate"
-            >
-              <span className="flex-shrink-0">🔗</span>
-              <span className="truncate">{BLOG_CONFIG.siteUrl}/{form.slug}/</span>
-            </a>
+            <div className="flex items-center gap-1">
+              <a
+                href={`${BLOG_CONFIG.siteUrl}/${form.slug}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 flex-1 min-w-0 rounded-lg border border-gray-200 px-3 py-2 text-xs text-gray-500 hover:bg-gray-50 truncate"
+              >
+                <span className="flex-shrink-0">🔗</span>
+                <span className="truncate">{BLOG_CONFIG.siteUrl}/{form.slug}/</span>
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${BLOG_CONFIG.siteUrl}/${form.slug}/`)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+                className="flex-shrink-0 rounded-lg border border-gray-200 px-2 py-2 text-xs text-gray-500 hover:bg-gray-50"
+                title="URLをコピー"
+              >
+                {copied ? '✓' : '📋'}
+              </button>
+            </div>
           )}
           <button
             onClick={() => navigate('/')}
