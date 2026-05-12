@@ -35,12 +35,12 @@ function sha256hex(data) {
   return createHash('sha256').update(data).digest('hex')
 }
 
-function collectFiles(dir) {
+function collectFiles(dir, base = dir) {
   const result = {}
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry)
-    if (statSync(full).isDirectory()) Object.assign(result, collectFiles(full))
-    else result['/' + relative(dir, full).replace(/\\/g, '/')] = readFileSync(full)
+    if (statSync(full).isDirectory()) Object.assign(result, collectFiles(full, base))
+    else result['/' + relative(base, full).replace(/\\/g, '/')] = readFileSync(full)
   }
   return result
 }
