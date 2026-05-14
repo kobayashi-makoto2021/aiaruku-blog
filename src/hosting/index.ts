@@ -34,7 +34,7 @@ export async function runDeploy(onProgress?: (msg: string) => void): Promise<voi
   // タグページ生成（サイドバー用に全タグの件数マップを渡す）
   const allTagCountMap = new Map([...tagGrouped.entries()].map(([t, ps]) => [t, ps.length]))
   for (const [tag, tagPosts] of tagGrouped) {
-    files[`/tag/${encodeURIComponent(tag)}/index.html`] = generateTagHtml(tag, tagPosts, allTagCountMap)
+    files[`/tag/${tag}/index.html`] = generateTagHtml(tag, tagPosts, allTagCountMap)
   }
 
   // サイトマップ
