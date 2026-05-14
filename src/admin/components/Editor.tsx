@@ -125,7 +125,7 @@ function Toolbar({ editor, tempPostId }: { editor: ReturnType<typeof useEditor>;
     }`
 
   return (
-    <div className="flex flex-wrap gap-1 border-b border-gray-200 px-3 py-2">
+    <div className="flex flex-wrap gap-1 border-b border-gray-200 px-3 py-2 sticky top-0 z-10 bg-white rounded-t-lg">
       <button onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive('bold'))}><strong>B</strong></button>
       <button onClick={() => editor.chain().focus().toggleItalic().run()} className={btn(editor.isActive('italic'))}><em>I</em></button>
       <div className="mx-1 w-px bg-gray-200" />
