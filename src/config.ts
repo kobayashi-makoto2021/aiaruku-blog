@@ -3,6 +3,18 @@ export const BLOG_CONFIG = {
   siteUrl: 'https://blog.aiaruku.com',
   gaId: 'G-M1WN0Z0R6W',
 
+  tagline: '「楽しい」から始める。「未来」につながる。',
+  taglineSub: 'レッスンのようす・スクールからのお知らせをお届けします。',
+
+  parentSiteUrl: 'https://aiaruku.com',
+  parentSiteNav: [
+    { label: '特徴', href: 'https://aiaruku.com/#features' },
+    { label: 'コース', href: 'https://aiaruku.com/#courses' },
+    { label: '料金', href: 'https://aiaruku.com/#pricing' },
+    { label: '保護者の声', href: 'https://aiaruku.com/#testimonials' },
+    { label: 'アクセス', href: 'https://aiaruku.com/#contact' },
+  ] as { label: string; href: string }[],
+
   allowedDomains: ['aiaruku.com'] as string[],
 
   firebase: {
