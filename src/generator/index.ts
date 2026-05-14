@@ -46,7 +46,7 @@ export function resolveEyecatch(post: { eyecatchUrl: string; content: string }):
 }
 
 function tagUrl(tag: string): string {
-  return `${BLOG_CONFIG.siteUrl}/tag/${tag}/`
+  return `${BLOG_CONFIG.siteUrl}/tag/${encodeURIComponent(tag)}/`
 }
 
 function buildTagMap(posts: Post[]): Map<string, number> {
