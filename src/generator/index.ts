@@ -143,7 +143,7 @@ const INDEX_CSS = `
   .section-title { font-size: 1rem; font-weight: 800; }
   .section-title::before { content: ''; display: inline-block; width: 4px; height: 1em; background: #52C5E8; border-radius: 2px; margin-right: .5rem; vertical-align: middle; }
   .featured-card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.07); margin-bottom: 2rem; }
-  .featured-card .eyecatch img { width: 100%; aspect-ratio: 16/7; object-fit: cover; }
+  .featured-card .eyecatch img { width: 100%; aspect-ratio: 16/7; object-fit: cover; object-position: top; }
   .featured-card .eyecatch-placeholder { width: 100%; aspect-ratio: 16/7; background: linear-gradient(135deg, #D6F1FA, #B3E5F5); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
   .featured-card .body { padding: 1.5rem 1.75rem 1.75rem; }
   .featured-card h2 { font-size: 1.2rem; font-weight: 800; line-height: 1.45; margin-bottom: .6rem; }

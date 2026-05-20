@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ブログ | ITスクール アイアルク（モックアップ）</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+      color: #1a1a1a;
+      line-height: 1.8;
+      background: #fafaf8;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      background: #fff;
+      border-bottom: 3px solid #52C5E8;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      font-weight: 800;
+      color: #1a1a1a;
+    }
+    .logo .school { font-size: 0.75rem; color: #6b7280; font-weight: 500; }
+    .logo .name { font-size: 1.15rem; color: #52C5E8; }
+    .logo .suffix { font-size: 0.85rem; color: #374151; font-weight: 600; }
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .header-nav a {
+      font-size: 0.8rem;
+      color: #374151;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .header-nav a:hover { color: #52C5E8; }
+    .header-nav .btn-back {
+      background: #52C5E8;
+      color: #fff;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .header-nav .btn-back:hover { background: #32B0D8; color: #fff; }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(135deg, #EEF9FD 0%, #D6F1FA 100%);
+      border-bottom: 1px solid #B3E5F5;
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+    }
+    .hero-label {
+      display: inline-block;
+      background: #52C5E8;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 0.2rem 0.8rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 0.6rem;
+      line-height: 1.4;
+    }
+    .hero h1 span { color: #F0587A; }
+    .hero p {
+      font-size: 0.9rem;
+      color: #6b7280;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    .main-col {}
+    .side-col {}
+
+    /* ===== SECTION HEADER ===== */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #1a1a1a;
+    }
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 1em;
+      background: #52C5E8;
+      border-radius: 2px;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+
+    /* ===== FEATURED CARD ===== */
+    .featured-card {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      margin-bottom: 2rem;
+    }
+    .featured-card .eyecatch img {
+      width: 100%;
+      aspect-ratio: 16/7;
+      object-fit: cover;
+    }
+    .featured-card .eyecatch-placeholder {
+      width: 100%;
+      aspect-ratio: 16/7;
+      background: linear-gradient(135deg, #D6F1FA, #B3E5F5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+    }
+    .featured-card .body {
+      padding: 1.5rem 1.75rem 1.75rem;
+    }
+    .card-tag {
+      display: inline-block;
+      background: #EEF9FD;
+      color: #32B0D8;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 4px;
+      margin-bottom: 0.6rem;
+    }
+    .featured-card h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      line-height: 1.45;
+      margin-bottom: 0.6rem;
+      color: #1a1a1a;
+    }
+    .featured-card h2 a:hover { color: #52C5E8; }
+    .featured-card .excerpt {
+      font-size: 0.875rem;
+      color: #6b7280;
+      line-height: 1.75;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-meta {
+      font-size: 0.775rem;
+      color: #9ca3af;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .read-more {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: #F0587A;
+      font-weight: 700;
+    }
+
+    /* ===== POST LIST ===== */
+    .post-list {
+      display: grid;
+      gap: 1rem;
+    }
+    .post-card {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      display: flex;
+      gap: 0;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .post-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+    .post-card-thumb {
+      width: 140px;
+      flex-shrink: 0;
+    }
+    .post-card-thumb img {
+      width: 140px;
+      height: 100%;
+      object-fit: cover;
+    }
+    .post-card-thumb-placeholder {
+      width: 140px;
+      height: 100%;
+      min-height: 90px;
+      background: linear-gradient(135deg, #D6F1FA, #E8F7C4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    .post-card-body {
+      padding: 1rem 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .post-card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 0.3rem;
+      color: #1a1a1a;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .post-card h3 a:hover { color: #52C5E8; }
+    .post-card .excerpt-sm {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 0.4rem;
+    }
+    .post-card .meta { font-size: 0.75rem; color: #9ca3af; }
+
+    /* ===== SIDEBAR ===== */
+    .side-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.25rem 1.25rem 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      margin-bottom: 1.25rem;
+    }
+    .side-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #B3E5F5;
+    }
+    .category-list {
+      list-style: none;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .category-list li a {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.825rem;
+      color: #374151;
+      padding: 0.3rem 0;
+    }
+    .category-list li a:hover { color: #52C5E8; }
+    .category-list .count {
+      background: #f3f4f6;
+      color: #6b7280;
+      font-size: 0.7rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+    }
+    .cta-card {
+      background: linear-gradient(135deg, #F0587A, #F07AAA);
+      border-radius: 12px;
+      padding: 1.5rem 1.25rem;
+      color: #fff;
+      text-align: center;
+    }
+    .cta-card .cta-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+    .cta-card .cta-sub {
+      font-size: 0.775rem;
+      opacity: 0.85;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    .cta-card .cta-btn {
+      display: block;
+      background: #fff;
+      color: #F0587A;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 0.6rem;
+      border-radius: 8px;
+    }
+    .cta-card .cta-btn:hover { background: #FDE8EE; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #1a1a1a;
+      color: #9ca3af;
+      padding: 2rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer-logo { color: #fff; font-size: 0.9rem; font-weight: 700; }
+    .footer-logo span { color: #52C5E8; }
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.78rem;
+    }
+    .footer-links a { color: #9ca3af; }
+    .footer-links a:hover { color: #fff; }
+    .footer-copy { font-size: 0.72rem; color: #4b5563; }
+
+    /* ===== MOCK BADGE ===== */
+    .mock-badge {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #f59e0b;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="logo">
+      <span class="school">ITスクール</span>
+      <span class="name">アイアルク</span>
+      <span class="suffix">ブログ</span>
+    </div>
+    <nav class="header-nav">
+      <a href="https://aiaruku.com/#features">特徴</a>
+      <a href="https://aiaruku.com/#courses">コース</a>
+      <a href="https://aiaruku.com/#pricing">料金</a>
+      <a href="https://aiaruku.com/#testimonials">保護者の声</a>
+      <a href="https://aiaruku.com/#contact">アクセス</a>
+      <a href="https://aiaruku.com/" class="btn-back">← 公式サイトに戻る</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <span class="hero-label">Official Blog</span>
+    <h1>「<span>楽しい</span>」から始める。<br>「未来」につながる。</h1>
+    <p>レッスンのようす・作品紹介・プログラミングのコツ・スクールからのお知らせをお届けします。</p>
+  </div>
+
+  <div class="container">
+    <main class="main-col">
+
+      <!-- 注目記事 -->
+      <div class="section-header">
+        <span class="section-title">最新記事</span>
+      </div>
+      <div class="featured-card">
+        <div class="eyecatch">
+          <img src="https://firebasestorage.googleapis.com/v0/b/aiaruku-blog.firebasestorage.app/o/blog-images%2Feyecatch%2Ftmp-1778731535025%2F1778731765293.png?alt=media" alt="AIくんが聞く！アイアルクの新しい予約サイトでできること">
+        </div>
+        <div class="body">
+          <h2><a href="https://blog.aiaruku.com/AI%E3%81%8F%E3%82%93%E3%81%8C%E8%81%9E%E3%81%8F%EF%BC%81%E3%82%A2%E3%82%A4%E3%82%A2%E3%83%AB%E3%82%AF%E3%81%AE%E6%96%B0%E3%81%97%E3%81%84%E4%BA%88%E7%B4%84%E3%82%B5%E3%82%A4%E3%83%88%E3%81%A7%E3%81%A7%E3%81%8D%E3%82%8B%E3%81%93%E3%81%A8/">AIくんが聞く！アイアルクの新しい予約サイトでできること</a></h2>
+          <p class="excerpt">アイアルクの新しい予約サイトについて、AIキャラクター「AIくん」が分かりやすく解説。生徒・保護者の皆さんがよりスムーズに予約・確認できるようになった機能をご紹介します。</p>
+          <div class="card-meta">
+            <span>2026年5月14日</span>
+            <a href="https://blog.aiaruku.com/AI%E3%81%8F%E3%82%93%E3%81%8C%E8%81%9E%E3%81%8F%EF%BC%81%E3%82%A2%E3%82%A4%E3%82%A2%E3%83%AB%E3%82%AF%E3%81%AE%E6%96%B0%E3%81%97%E3%81%84%E4%BA%88%E7%B4%84%E3%82%B5%E3%82%A4%E3%83%88%E3%81%A7%E3%81%A7%E3%81%8D%E3%82%8B%E3%81%93%E3%81%A8/" class="read-more">続きを読む →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 記事一覧 -->
+      <div class="section-header">
+        <span class="section-title">新着記事</span>
+      </div>
+      <div class="post-list">
+
+        <div class="post-card">
+          <div class="post-card-thumb">
+            <img src="https://firebasestorage.googleapis.com/v0/b/aiaruku-blog.firebasestorage.app/o/blog-images%2Feyecatch%2Ftmp-1778634165479%2F1778637315411.png?alt=media" alt="">
+          </div>
+          <div class="post-card-body">
+            <h3><a href="https://blog.aiaruku.com/%E5%8C%97%E8%B6%8A%E9%AB%98%E6%A0%A1%E3%83%90%E3%82%B9%E4%BA%8B%E6%95%85%E3%82%92%E3%80%81%E6%96%B0%E6%BD%9F%E7%9C%8C%E3%81%AE%E9%AB%98%E6%A0%A1%E4%BA%8B%E6%83%85%E3%81%8B%E3%82%89%E8%80%83%E3%81%88%E3%82%8B/">北越高校バス事故を、新潟県の高校事情から考える</a></h3>
+            <p class="excerpt-sm">新潟県の高校進学事情を背景に、今回の事故について考察します。</p>
+            <p class="meta">2026年5月13日</p>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-card-thumb">
+            <img src="https://firebasestorage.googleapis.com/v0/b/aiaruku-blog.firebasestorage.app/o/blog-images%2Fposts%2Ftmp-1778554683478%2F1778555299299.png?alt=media" alt="">
+          </div>
+          <div class="post-card-body">
+            <span class="card-tag">AI活用</span>
+            <h3><a href="https://blog.aiaruku.com/%E3%82%A2%E3%82%A4%E3%82%A2%E3%83%AB%E3%82%AF%C3%97AI%E3%81%A7%E8%B5%B7%E3%81%93%E3%81%A3%E3%81%A6%E3%82%8B%E3%81%93%E3%81%A8/">アイアルク×AIで起こってること</a></h3>
+            <p class="excerpt-sm">スクール現場でAIを取り入れることで、子どもたちや授業にどんな変化が生まれているか。</p>
+            <p class="meta">2026年5月12日</p>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-card-thumb">
+            <img src="https://firebasestorage.googleapis.com/v0/b/aiaruku-blog.firebasestorage.app/o/blog-images%2Fposts%2Ftmp-1778245174819%2F1778245515861.png?alt=media" alt="">
+          </div>
+          <div class="post-card-body">
+            <span class="card-tag">コミュニケーション</span>
+            <h3><a href="https://blog.aiaruku.com/%E3%82%B3%E3%83%9F%E3%83%A5%E3%83%8B%E3%82%B1%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AF%E8%83%BD%E5%8A%9B%E3%81%A7%E3%82%84%E3%82%8B%E3%82%82%E3%81%AE%EF%BC%9F/">コミュニケーションは能力でやるもの？</a></h3>
+            <p class="excerpt-sm">コミュニケーションを「能力」として評価せず、態度・倫理観・興味を育む教育方針について。</p>
+            <p class="meta">2026年5月8日</p>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <div class="post-card-thumb">
+            <img src="https://firebasestorage.googleapis.com/v0/b/aiaruku-blog.firebasestorage.app/o/blog-images%2Fposts%2Ftmp-1778242591535%2F1778243125854.png?alt=media" alt="">
+          </div>
+          <div class="post-card-body">
+            <span class="card-tag">AIとの付き合い方</span>
+            <h3><a href="https://blog.aiaruku.com/%E3%82%A2%E3%82%A4%E3%82%A2%E3%83%AB%E3%82%AF2026%E5%B9%B4%E5%BA%A6%E3%82%B9%E3%82%BF%E3%83%BC%E3%83%88/">アイアルク2026年度スタートしました ―AIと子どもたちをどうつなぐのか―</a></h3>
+            <p class="excerpt-sm">2026年度が始まりました。AIの時代に子どもたちにどんな力を育てていくのか、改めて考えます。</p>
+            <p class="meta">2026年5月8日</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <aside class="side-col">
+
+      <!-- カテゴリ -->
+      <div class="side-card">
+        <p class="side-title">カテゴリ</p>
+        <ul class="category-list">
+          <li><a href="#">AI活用</a></li>
+          <li><a href="#">AIとの付き合い方</a></li>
+          <li><a href="#">コミュニケーション</a></li>
+          <li><a href="#">プログラミング</a></li>
+          <li><a href="#">教育</a></li>
+        </ul>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-card">
+        <p class="cta-title">まずは体験してみませんか？</p>
+        <p class="cta-sub">無料体験会を随時開催中。まずはお気軽にご参加ください。</p>
+        <a href="https://aiaruku.com/" class="cta-btn">体験会に申し込む</a>
+      </div>
+
+    </aside>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">ITスクール <span>アイアルク</span> 長岡本校</div>
+      <div class="footer-links">
+        <a href="https://aiaruku.com/">公式サイト</a>
+        <a href="#">プライバシーポリシー</a>
+        <a href="/admin/">管理画面</a>
+      </div>
+      <p class="footer-copy">© 2026 ITスクール アイアルク. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div class="mock-badge">MOCKUP</div>
+
+</body>
+</html>
