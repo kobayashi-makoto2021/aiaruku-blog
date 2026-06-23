@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { User } from 'firebase/auth'
-import type { UserRole } from '@/types'
+import type { UserRole, PostStatus } from '@/types'
 import { createPost, updatePost, getPost, generateSlug, type PostInput } from '@/posts'
 import { uploadImage } from '@/storage'
 import { runDeploy } from '@/hosting'
 import { BLOG_CONFIG } from '@/config'
-import type { PostStatus } from '@/types'
 import Editor from '@/admin/components/Editor'
 import SeoPanel from '@/admin/components/SeoPanel'
 import TagInput from '@/admin/components/TagInput'
@@ -29,6 +28,19 @@ const EMPTY_FORM: PostInput = {
   commentsEnabled: false,
 }
 
+function toDatetimeLocal(seconds: number): string {
+  const d = new Date(seconds * 1000)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function formatScheduledAt(seconds: number): string {
+  return new Date(seconds * 1000).toLocaleString('ja-JP', {
+    year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+}
+
 export default function PostEditor({ user }: Props) {
   const { postId } = useParams<{ postId?: string }>()
   const isNew = !postId
@@ -36,6 +48,8 @@ export default function PostEditor({ user }: Props) {
 
   const [form, setForm] = useState<PostInput>(EMPTY_FORM)
   const [currentStatus, setCurrentStatus] = useState<PostStatus>('draft')
+  const [scheduledAtStr, setScheduledAtStr] = useState('')
+  const [scheduledAtSeconds, setScheduledAtSeconds] = useState<number | null>(null)
   const [slugEdited, setSlugEdited] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState<string | null>(null)
@@ -44,7 +58,6 @@ export default function PostEditor({ user }: Props) {
   const [savedPostId, setSavedPostId] = useState<string | null>(postId ?? null)
   const [copied, setCopied] = useState(false)
 
-  // 新規記事でも画像をアップロードできるよう一時IDを持つ
   const tempId = useRef(postId ?? `tmp-${Date.now()}`)
 
   useEffect(() => {
@@ -65,7 +78,11 @@ export default function PostEditor({ user }: Props) {
       })
       setCurrentStatus(post.status)
       setSlugEdited(true)
-      // commentsEnabled が未設定の古い記事は false 扱い
+      if (post.scheduledAt) {
+        const secs = (post.scheduledAt as unknown as { seconds: number }).seconds
+        setScheduledAtStr(toDatetimeLocal(secs))
+        setScheduledAtSeconds(secs)
+      }
     })
   }, [postId])
 
@@ -86,7 +103,7 @@ export default function PostEditor({ user }: Props) {
     set('eyecatchUrl', url)
   }
 
-  async function save(status: 'draft' | 'published') {
+  async function save(status: PostStatus, scheduledDate?: Date) {
     if (!form.title.trim()) {
       alert('タイトルを入力してください')
       return
@@ -96,13 +113,14 @@ export default function PostEditor({ user }: Props) {
     try {
       let id: string
       if (isNew && !savedPostId) {
-        id = await createPost(form, user.uid, user.displayName ?? '', status)
+        id = await createPost(form, user.uid, user.displayName ?? '', status, scheduledDate ?? null)
         setSavedPostId(id)
       } else {
         id = savedPostId ?? postId!
-        await updatePost(id, form, status)
+        await updatePost(id, form, status, scheduledDate ?? null)
       }
       setCurrentStatus(status)
+
       if (status === 'published' || (currentStatus === 'published' && status === 'draft')) {
         setSaveMsg('デプロイ中...')
         setDeploying(true)
@@ -112,6 +130,13 @@ export default function PostEditor({ user }: Props) {
           setDeploying(false)
         }
         navigate('/')
+      } else if (status === 'scheduled') {
+        if (scheduledDate) setScheduledAtSeconds(Math.floor(scheduledDate.getTime() / 1000))
+        if (isNew && !savedPostId) {
+          navigate(`/posts/${id}/edit`, { replace: true })
+        }
+        setSaveMsg('予約を設定しました')
+        setTimeout(() => setSaveMsg(null), 3000)
       } else {
         if (isNew && !savedPostId) {
           navigate(`/posts/${id}/edit`, { replace: true })
@@ -124,6 +149,19 @@ export default function PostEditor({ user }: Props) {
     } finally {
       setSaving(false)
     }
+  }
+
+  function handleSchedule() {
+    if (!scheduledAtStr) {
+      alert('予約日時を入力してください')
+      return
+    }
+    const date = new Date(scheduledAtStr)
+    if (date <= new Date()) {
+      alert('予約日時は現在より未来の日時を指定してください')
+      return
+    }
+    save('scheduled', date)
   }
 
   return (
@@ -190,6 +228,44 @@ export default function PostEditor({ user }: Props) {
                 非公開にする
               </button>
             </>
+          ) : currentStatus === 'scheduled' ? (
+            <>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-xs font-medium text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded-full">予約中</span>
+              </div>
+              {scheduledAtSeconds && (
+                <p className="text-xs text-gray-500">{formatScheduledAt(scheduledAtSeconds)}</p>
+              )}
+              <button
+                onClick={() => save('published')}
+                disabled={saving || deploying}
+                className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {deploying ? 'デプロイ中...' : saving ? '保存中...' : '今すぐ公開'}
+              </button>
+              <div className="space-y-1">
+                <input
+                  type="datetime-local"
+                  value={scheduledAtStr}
+                  onChange={(e) => setScheduledAtStr(e.target.value)}
+                  className="w-full rounded border border-gray-200 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={handleSchedule}
+                  disabled={saving}
+                  className="w-full rounded-lg border border-yellow-400 px-4 py-2 text-sm font-medium text-yellow-700 hover:bg-yellow-50 disabled:opacity-50"
+                >
+                  予約日時を変更
+                </button>
+              </div>
+              <button
+                onClick={() => save('draft')}
+                disabled={saving}
+                className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+              >
+                予約を解除
+              </button>
+            </>
           ) : (
             <>
               <div className="flex items-center justify-between mb-1">
@@ -209,6 +285,25 @@ export default function PostEditor({ user }: Props) {
               >
                 下書き保存
               </button>
+              {/* 予約投稿 */}
+              <div className="border-t border-gray-100 pt-2 space-y-1">
+                <p className="text-xs text-gray-500 font-medium">予約投稿</p>
+                <input
+                  type="datetime-local"
+                  value={scheduledAtStr}
+                  onChange={(e) => setScheduledAtStr(e.target.value)}
+                  className="w-full rounded border border-gray-200 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {scheduledAtStr && (
+                  <button
+                    onClick={handleSchedule}
+                    disabled={saving}
+                    className="w-full rounded-lg border border-yellow-400 px-4 py-2 text-sm font-medium text-yellow-700 hover:bg-yellow-50 disabled:opacity-50"
+                  >
+                    {saving ? '保存中...' : '予約投稿'}
+                  </button>
+                )}
+              </div>
             </>
           )}
           {form.slug && (

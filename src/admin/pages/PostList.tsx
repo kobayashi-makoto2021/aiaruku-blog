@@ -34,19 +34,35 @@ export default function PostList({ user, role }: Props) {
   }
 
   async function handleToggleStatus(post: Post) {
-    const newStatus = post.status === 'published' ? 'draft' : 'published'
-    if (!window.confirm(
-      newStatus === 'draft'
-        ? `「${post.title}」を非公開にしますか？`
-        : `「${post.title}」を公開しますか？`
-    )) return
-    setTogglingId(post.id)
-    try {
-      await updatePost(post.id, {}, newStatus)
-      setPosts((prev) => prev.map((p) => p.id === post.id ? { ...p, status: newStatus } : p))
-      await runDeploy()
-    } finally {
-      setTogglingId(null)
+    if (post.status === 'published') {
+      if (!window.confirm(`「${post.title}」を非公開にしますか？`)) return
+      setTogglingId(post.id)
+      try {
+        await updatePost(post.id, {}, 'draft')
+        setPosts((prev) => prev.map((p) => p.id === post.id ? { ...p, status: 'draft' } : p))
+        await runDeploy()
+      } finally {
+        setTogglingId(null)
+      }
+    } else if (post.status === 'scheduled') {
+      if (!window.confirm(`「${post.title}」の予約を解除して下書きに戻しますか？`)) return
+      setTogglingId(post.id)
+      try {
+        await updatePost(post.id, {}, 'draft')
+        setPosts((prev) => prev.map((p) => p.id === post.id ? { ...p, status: 'draft' } : p))
+      } finally {
+        setTogglingId(null)
+      }
+    } else {
+      if (!window.confirm(`「${post.title}」を公開しますか？`)) return
+      setTogglingId(post.id)
+      try {
+        await updatePost(post.id, {}, 'published')
+        setPosts((prev) => prev.map((p) => p.id === post.id ? { ...p, status: 'published' } : p))
+        await runDeploy()
+      } finally {
+        setTogglingId(null)
+      }
     }
   }
 
@@ -85,14 +101,21 @@ export default function PostList({ user, role }: Props) {
               <button
                 onClick={() => handleToggleStatus(post)}
                 disabled={togglingId === post.id}
-                title={post.status === 'published' ? 'クリックして非公開にする' : 'クリックして公開する'}
+                title={
+                  post.status === 'published' ? 'クリックして非公開にする' :
+                  post.status === 'scheduled' ? 'クリックして予約を解除する' :
+                  'クリックして公開する'
+                }
                 className={`rounded-full px-2 py-0.5 text-xs flex-shrink-0 transition hover:opacity-70 disabled:opacity-50 ${
-                  post.status === 'published'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-500'
+                  post.status === 'published' ? 'bg-green-100 text-green-700' :
+                  post.status === 'scheduled' ? 'bg-yellow-100 text-yellow-700' :
+                  'bg-gray-100 text-gray-500'
                 }`}
               >
-                {togglingId === post.id ? '処理中...' : post.status === 'published' ? '公開中' : '下書き'}
+                {togglingId === post.id ? '処理中...' :
+                  post.status === 'published' ? '公開中' :
+                  post.status === 'scheduled' ? '予約中' :
+                  '下書き'}
               </button>
               <div className="flex gap-2 flex-shrink-0">
                 <button

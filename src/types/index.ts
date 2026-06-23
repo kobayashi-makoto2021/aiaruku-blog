@@ -11,7 +11,7 @@ export interface BlogUser {
   lastLoginAt: Timestamp
 }
 
-export type PostStatus = 'draft' | 'published'
+export type PostStatus = 'draft' | 'scheduled' | 'published'
 
 export interface Post {
   id: string
@@ -23,6 +23,7 @@ export interface Post {
   authorName: string
   status: PostStatus
   publishedAt: Timestamp | null
+  scheduledAt: Timestamp | null
   updatedAt: Timestamp
   metaTitle: string
   metaDescription: string

@@ -10,6 +10,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  Timestamp,
 } from 'firebase/firestore'
 import { db } from '@/firebase'
 import type { Post, PostStatus } from '@/types'
@@ -33,6 +34,7 @@ export async function createPost(
   authorId: string,
   authorName: string,
   status: PostStatus,
+  scheduledAt?: Date | null,
 ): Promise<string> {
   const ref = await addDoc(collection(db, 'posts'), {
     ...input,
@@ -40,6 +42,7 @@ export async function createPost(
     authorName,
     status,
     publishedAt: status === 'published' ? serverTimestamp() : null,
+    scheduledAt: status === 'scheduled' && scheduledAt ? Timestamp.fromDate(scheduledAt) : null,
     updatedAt: serverTimestamp(),
   })
   return ref.id
@@ -49,6 +52,7 @@ export async function updatePost(
   postId: string,
   input: Partial<PostInput>,
   status?: PostStatus,
+  scheduledAt?: Date | null,
 ): Promise<void> {
   const data: Record<string, unknown> = {
     ...input,
@@ -58,6 +62,13 @@ export async function updatePost(
     data.status = status
     if (status === 'published') {
       data.publishedAt = serverTimestamp()
+      data.scheduledAt = null
+    } else if (status === 'scheduled' && scheduledAt) {
+      data.scheduledAt = Timestamp.fromDate(scheduledAt)
+      data.publishedAt = null
+    } else if (status === 'draft') {
+      data.publishedAt = null
+      data.scheduledAt = null
     }
   }
   await updateDoc(doc(db, 'posts', postId), data)
