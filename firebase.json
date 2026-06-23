@@ -9,6 +9,7 @@
     "public": "dist",
     "ignore": ["firebase.json", "**/.*"],
     "rewrites": [
+      { "source": "/api/track-view", "function": "trackView", "region": "asia-northeast1" },
       { "source": "/admin", "destination": "/admin/index.html" },
       { "source": "/admin/**", "destination": "/admin/index.html" }
     ],

@@ -1,13 +1,43 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.publishScheduledPosts = void 0;
+exports.publishScheduledPosts = exports.trackView = void 0;
 const scheduler_1 = require("firebase-functions/v2/scheduler");
+const https_1 = require("firebase-functions/v2/https");
 const app_1 = require("firebase-admin/app");
 const firestore_1 = require("firebase-admin/firestore");
 const google_auth_library_1 = require("google-auth-library");
 const generator_1 = require("./generator");
 const deploy_1 = require("./deploy");
 (0, app_1.initializeApp)();
+function classifyReferrer(ref) {
+    if (!ref)
+        return 'direct';
+    if (/google\.|bing\.|yahoo\.|duckduckgo\./.test(ref))
+        return 'google';
+    if (/twitter\.com|x\.com|facebook\.com|instagram\.com|line\.me/.test(ref))
+        return 'social';
+    return 'other';
+}
+exports.trackView = (0, https_1.onRequest)({ region: 'asia-northeast1', cors: true }, async (req, res) => {
+    if (req.method !== 'POST') {
+        res.status(405).send('Method Not Allowed');
+        return;
+    }
+    const slug = typeof req.body?.slug === 'string' ? req.body.slug.trim() : '';
+    if (!slug) {
+        res.status(400).send('Bad Request');
+        return;
+    }
+    const referrer = typeof req.body?.referrer === 'string' ? req.body.referrer : '';
+    const source = classifyReferrer(referrer);
+    const jstOffset = 9 * 60 * 60 * 1000;
+    const date = new Date(Date.now() + jstOffset).toISOString().split('T')[0];
+    const docId = `${date}_${slug}`;
+    const db = (0, firestore_1.getFirestore)();
+    await db.collection('analyticsDaily').doc(docId).set({ date, slug, views: firestore_1.FieldValue.increment(1), [source]: firestore_1.FieldValue.increment(1) }, { merge: true });
+    console.log(`[track-view] ${slug} ${source} ${date}`);
+    res.status(200).send('ok');
+});
 exports.publishScheduledPosts = (0, scheduler_1.onSchedule)({
     schedule: 'every 5 minutes',
     region: 'asia-northeast1',

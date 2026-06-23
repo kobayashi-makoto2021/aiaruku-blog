@@ -11,6 +11,7 @@ import PostEditor from './pages/PostEditor'
 import DeployPage from './pages/Deploy'
 import UsersPage from './pages/Users'
 import CommentsPage from './pages/Comments'
+import AnalyticsPage from './pages/Analytics'
 
 type AuthState =
   | { status: 'loading' }
@@ -70,6 +71,7 @@ export default function App() {
         <Route path="deploy" element={<DeployPage user={user} role={role} />} />
         <Route path="users" element={<UsersPage user={user} role={role} />} />
         <Route path="comments" element={<CommentsPage user={user} role={role} />} />
+        {role === 'admin' && <Route path="analytics" element={<AnalyticsPage />} />}
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -1,4 +1,5 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler'
+import { onRequest } from 'firebase-functions/v2/https'
 import { initializeApp } from 'firebase-admin/app'
 import { getFirestore, Timestamp, FieldValue, type Firestore } from 'firebase-admin/firestore'
 import { GoogleAuth } from 'google-auth-library'
@@ -12,6 +13,42 @@ import {
 import { deployToHosting } from './deploy'
 
 initializeApp()
+
+function classifyReferrer(ref: string): 'google' | 'social' | 'direct' | 'other' {
+  if (!ref) return 'direct'
+  if (/google\.|bing\.|yahoo\.|duckduckgo\./.test(ref)) return 'google'
+  if (/twitter\.com|x\.com|facebook\.com|instagram\.com|line\.me/.test(ref)) return 'social'
+  return 'other'
+}
+
+export const trackView = onRequest(
+  { region: 'asia-northeast1', cors: true },
+  async (req, res) => {
+    if (req.method !== 'POST') {
+      res.status(405).send('Method Not Allowed')
+      return
+    }
+    const slug = typeof req.body?.slug === 'string' ? req.body.slug.trim() : ''
+    if (!slug) {
+      res.status(400).send('Bad Request')
+      return
+    }
+    const referrer = typeof req.body?.referrer === 'string' ? req.body.referrer : ''
+    const source = classifyReferrer(referrer)
+
+    const jstOffset = 9 * 60 * 60 * 1000
+    const date = new Date(Date.now() + jstOffset).toISOString().split('T')[0]
+    const docId = `${date}_${slug}`
+
+    const db = getFirestore()
+    await db.collection('analyticsDaily').doc(docId).set(
+      { date, slug, views: FieldValue.increment(1), [source]: FieldValue.increment(1) },
+      { merge: true }
+    )
+    console.log(`[track-view] ${slug} ${source} ${date}`)
+    res.status(200).send('ok')
+  }
+)
 
 export const publishScheduledPosts = onSchedule(
   {

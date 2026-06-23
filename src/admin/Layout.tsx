@@ -47,6 +47,11 @@ export default function Layout({ user, role }: Props) {
             </NavLink>
           )}
           {role === 'admin' && (
+            <NavLink to="/analytics" className={({ isActive }) => isActive ? 'text-blue-600 font-medium' : 'text-gray-500 hover:text-gray-800'}>
+              アクセス解析
+            </NavLink>
+          )}
+          {role === 'admin' && (
             <NavLink to="/deploy" className={({ isActive }) => isActive ? 'text-blue-600 font-medium' : 'text-gray-500 hover:text-gray-800'}>
               デプロイ
             </NavLink>
