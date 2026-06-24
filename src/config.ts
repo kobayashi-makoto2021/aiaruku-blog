@@ -27,4 +27,5 @@ export const BLOG_CONFIG = {
   },
 
   hostingSiteId: 'aiaruku-blog',
+  trackViewUrl: 'https://trackview-jzq4nhtjjq-an.a.run.app',
 }
