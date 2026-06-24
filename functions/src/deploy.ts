@@ -71,6 +71,7 @@ export async function deployToHosting(
           { glob: '**/*.html', headers: { 'Cache-Control': 'public, max-age=3600' } },
         ],
         rewrites: [
+          { glob: '/api/track-view', run: { serviceId: 'trackview', region: 'asia-northeast1' } },
           { glob: '/admin', path: '/admin/index.html' },
           { glob: '/admin/**', path: '/admin/index.html' },
         ],
