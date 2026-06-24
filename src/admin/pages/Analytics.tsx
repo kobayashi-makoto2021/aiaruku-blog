@@ -109,7 +109,7 @@ export default function Analytics() {
         plugins: { legend: { display: false } },
         scales: {
           x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 }, maxTicksLimit: 8 } },
-          y: { grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', font: { size: 11 } }, beginAtZero: true },
+          y: { grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', font: { size: 11 }, precision: 0, stepSize: 1 }, beginAtZero: true },
         },
       },
     })
