@@ -281,6 +281,7 @@ export function generatePostHtml(post: Post): string {
     </div>
   </div>
   ${renderFooter()}
+  <script>fetch('/api/track-view',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:'${post.slug}',referrer:document.referrer}),keepalive:true}).catch(function(){})</script>
 </body>
 </html>`
 }
