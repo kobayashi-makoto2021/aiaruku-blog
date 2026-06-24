@@ -6,6 +6,39 @@
 
 ---
 
+## アクセス解析機能を追加（2026-06-24）
+
+Firestoreベースの独自アクセス解析を実装。GA4等の外部サービスを使わずFirebase内で完結。
+
+### 仕組み
+
+- 記事ページのHTMLに1行のトラッキングJSを自動埋め込み（`generatePostHtml` のテンプレートに追加）
+- ページ表示時に Cloud Functions（`trackView`）へ `fetch` でPOST
+- Cloud Function が `document.referrer` からアクセス元を分類し、Firestoreの `analyticsDaily/{YYYY-MM-DD_slug}` に `FieldValue.increment` で書き込み
+- 管理画面に「アクセス解析」ページを追加（PV推移グラフ・アクセス元内訳・記事別ランキング）
+
+### データ構造
+
+```
+analyticsDaily/{YYYY-MM-DD_slug}
+  ├─ date: string
+  ├─ slug: string
+  ├─ views: number
+  ├─ google: number   ← Google/Bing/Yahoo検索流入
+  ├─ direct: number  ← 直接アクセス
+  ├─ social: number  ← X/Facebook/Instagram等
+  └─ other: number
+```
+
+### 注意点
+
+- データ蓄積は実装日（2026-06-24）以降から
+- トラッキングJSはブラウザ上で実行されるためボットは基本的にカウントされない
+- `src/generator/index.ts`（管理画面デプロイ）と `functions/src/generator.ts`（予約投稿デプロイ）の2つのgeneratorに同じトラッキングコードが入っている
+- Cloud Functions の trackView URL（`trackview-jzq4nhtjjq-an.a.run.app`）は `config.ts` の `trackViewUrl` で管理
+
+---
+
 ## LP2026との連携方針（2026-05-06 決定）
 
 ### ゴール
