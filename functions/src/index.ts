@@ -14,10 +14,11 @@ import { deployToHosting } from './deploy'
 
 initializeApp()
 
-function classifyReferrer(ref: string): 'google' | 'social' | 'direct' | 'other' {
+function classifyReferrer(ref: string): 'google' | 'social' | 'direct' | 'internal' | 'other' {
   if (!ref) return 'direct'
   if (/google\.|bing\.|yahoo\.|duckduckgo\./.test(ref)) return 'google'
   if (/twitter\.com|x\.com|facebook\.com|instagram\.com|line\.me/.test(ref)) return 'social'
+  if (/aiaruku\.com/.test(ref)) return 'internal'
   return 'other'
 }
 

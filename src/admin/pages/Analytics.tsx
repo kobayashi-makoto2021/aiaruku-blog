@@ -13,6 +13,7 @@ interface DailyRecord {
   google: number
   direct: number
   social: number
+  internal: number
   other: number
 }
 
@@ -119,6 +120,7 @@ export default function Analytics() {
   const totalGoogle = records.reduce((s, r) => s + (r.google || 0), 0)
   const totalDirect = records.reduce((s, r) => s + (r.direct || 0), 0)
   const totalSocial = records.reduce((s, r) => s + (r.social || 0), 0)
+  const totalInternal = records.reduce((s, r) => s + (r.internal || 0), 0)
   const totalOther = records.reduce((s, r) => s + (r.other || 0), 0)
 
   const ranking = getSlugRanking(records)
@@ -194,6 +196,7 @@ export default function Analytics() {
                 { label: 'Google 検索', value: totalGoogle, color: 'bg-blue-500' },
                 { label: '直接アクセス', value: totalDirect, color: 'bg-indigo-400' },
                 { label: 'SNS', value: totalSocial, color: 'bg-pink-400' },
+                { label: '自社サイト', value: totalInternal, color: 'bg-green-400' },
                 { label: 'その他', value: totalOther, color: 'bg-gray-300' },
               ].map(({ label, value, color }) => {
                 const pct = totalViews > 0 ? Math.round((value / totalViews) * 100) : 0
