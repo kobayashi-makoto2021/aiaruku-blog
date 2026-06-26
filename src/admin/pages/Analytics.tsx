@@ -168,7 +168,7 @@ export default function Analytics() {
               className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-xs truncate"
             >
               {slugs.map(s => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>{s === '_index' ? 'ブログトップ' : s}</option>
               ))}
             </select>
           )}
@@ -229,7 +229,7 @@ export default function Analytics() {
                   <span className={`w-5 flex-shrink-0 text-center text-sm font-bold ${i === 0 ? 'text-blue-600' : i === 1 ? 'text-blue-400' : i === 2 ? 'text-blue-300' : 'text-gray-400'}`}>
                     {i + 1}
                   </span>
-                  <span className="flex-1 truncate text-sm text-gray-800">{slug}</span>
+                  <span className="flex-1 truncate text-sm text-gray-800">{slug === '_index' ? 'ブログトップ' : slug}</span>
                   <span className="flex-shrink-0 text-sm font-medium text-gray-600">{views.toLocaleString()} PV</span>
                 </div>
               ))}

@@ -356,6 +356,7 @@ export function generateIndexHtml(posts: Post[]): string {
     ${renderSidebar(tagMap)}
   </div>
   ${renderFooter()}
+  <script>fetch('${BLOG_CONFIG.trackViewUrl}',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:'_index',referrer:document.referrer}),keepalive:true}).catch(function(){})</script>
 </body>
 </html>`
 }
