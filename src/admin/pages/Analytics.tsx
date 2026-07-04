@@ -14,6 +14,7 @@ interface DailyRecord {
   direct: number
   social: number
   internal: number
+  booking: number
   other: number
 }
 
@@ -121,6 +122,7 @@ export default function Analytics() {
   const totalDirect = records.reduce((s, r) => s + (r.direct || 0), 0)
   const totalSocial = records.reduce((s, r) => s + (r.social || 0), 0)
   const totalInternal = records.reduce((s, r) => s + (r.internal || 0), 0)
+  const totalBooking = records.reduce((s, r) => s + (r.booking || 0), 0)
   const totalOther = records.reduce((s, r) => s + (r.other || 0), 0)
 
   const ranking = getSlugRanking(records)
@@ -197,6 +199,7 @@ export default function Analytics() {
                 { label: '直接アクセス', value: totalDirect, color: 'bg-indigo-400' },
                 { label: 'SNS', value: totalSocial, color: 'bg-pink-400' },
                 { label: '自社サイト', value: totalInternal, color: 'bg-green-400' },
+                { label: '予約アプリ', value: totalBooking, color: 'bg-amber-400' },
                 { label: 'その他', value: totalOther, color: 'bg-gray-300' },
               ].map(({ label, value, color }) => {
                 const pct = totalViews > 0 ? Math.round((value / totalViews) * 100) : 0

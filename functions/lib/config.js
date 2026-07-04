@@ -25,5 +25,6 @@ exports.BLOG_CONFIG = {
         appId: '1:659368756457:web:90906912c53eb507b81c78',
     },
     hostingSiteId: 'aiaruku-blog',
+    trackViewUrl: 'https://trackview-jzq4nhtjjq-an.a.run.app',
 };
 //# sourceMappingURL=config.js.map

@@ -16,6 +16,10 @@ function classifyReferrer(ref) {
         return 'google';
     if (/twitter\.com|x\.com|facebook\.com|instagram\.com|line\.me/.test(ref))
         return 'social';
+    if (/booking\.aiaruku\.com/.test(ref))
+        return 'booking';
+    if (/aiaruku\.com/.test(ref))
+        return 'internal';
     return 'other';
 }
 exports.trackView = (0, https_1.onRequest)({ region: 'asia-northeast1', cors: true }, async (req, res) => {

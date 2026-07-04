@@ -249,6 +249,7 @@ function generatePostHtml(post) {
     </div>
   </div>
   ${renderFooter()}
+  <script>fetch('${config_1.BLOG_CONFIG.trackViewUrl}',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:'${post.slug}',referrer:document.referrer}),keepalive:true}).catch(function(){})</script>
 </body>
 </html>`;
 }
