@@ -121,6 +121,13 @@ const SHARED_CSS = `
   .footer-links a { color: #9ca3af; }
   .footer-links a:hover { color: #fff; }
   .footer-copy { font-size: .72rem; color: #4b5563; }
+  @media (max-width: 768px) {
+    .site-header { padding: 0 1rem; height: 56px; }
+    .site-logo { font-size: 1rem; }
+    .header-nav a:not(.btn-back) { display: none; }
+    .header-nav .btn-back { padding: .35rem .8rem; font-size: .72rem; }
+    footer { padding: 1.5rem 1rem; }
+  }
 `;
 const INDEX_CSS = `
   .hero { background: linear-gradient(135deg, #EEF9FD, #D6F1FA); border-bottom: 1px solid #B3E5F5; padding: 3rem 2rem 2.5rem; text-align: center; }
@@ -166,6 +173,14 @@ const INDEX_CSS = `
   .cta-btn:hover { background: #FDE8EE; }
   .back-link { margin-top: 2rem; }
   .back-link a { color: #52C5E8; font-size: .875rem; }
+  @media (max-width: 768px) {
+    .hero { padding: 2rem 1rem 1.75rem; }
+    .layout { grid-template-columns: 1fr; padding: 1.5rem 1rem 3rem; gap: 2rem; }
+    .featured-card .body { padding: 1.1rem 1.1rem 1.25rem; }
+    .featured-card h2 { font-size: 1.05rem; }
+    .post-card-thumb, .post-card-thumb img, .post-card-thumb-placeholder { width: 100px; }
+    .post-card-body { padding: .75rem .9rem; }
+  }
 `;
 const POST_CSS = `
   .container { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem; }
@@ -188,6 +203,10 @@ const POST_CSS = `
   .post-tag:hover { background: #D6F1FA; }
   .back-link { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb; }
   .back-link a { color: #52C5E8; }
+  @media (max-width: 768px) {
+    .container { padding: 1.5rem 1rem; }
+    .post-title { font-size: 1.4rem; }
+  }
 `;
 function generatePostHtml(post) {
     const title = post.metaTitle || post.title;
